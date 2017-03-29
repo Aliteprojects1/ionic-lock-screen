@@ -4,7 +4,7 @@ const lockScreenService = ($rootScope) => {
       $rootScope.$broadcast('ionic-lock-screen:show', {
         touchId           : settings.touchId || false,
         ACDelbuttons      : settings.ACDelbuttons || false,
-        passcode          : settings.code,
+        passcode          : settings.code || null, //if not set, onCorrect callback will be triggered with the entered passcode as a parameter (useful when you want to let the user set his passcode)
         onCorrect         : settings.onCorrect || null,
         onWrong           : settings.onWrong || null,
         onBottomButton    : settings.onBottomButton || null, //callback function triggered when the button at the bottom is clicked
@@ -22,7 +22,7 @@ const lockScreenService = ($rootScope) => {
         buttonACTextColor : settings.buttonACTextColor || "#464646",
         buttonDelColor    : settings.buttonDelColor || "#F8F8F8",
         buttonDelTextColor: settings.buttonDelTextColor || "#464646",
-        maxAttempts       : settings.maxAttempts || null //if set, onWrong callback will be called only after the chosen number of attempts
+        maxAttempts       : settings.maxAttempts || null //if set, onWrong callback will be called only after the chosen number of attempts. It will also hide the lock-screen.
       });
     },
   };
@@ -87,29 +87,36 @@ const lockScreenDirective = ($timeout) => {
       };
       scope.digit = (digit) => {
         scope.selected = +digit;
-        if (scope.passcodeWrong) { //o.passcodeWrong||
+        if (scope.passcodeWrong) {
           return;
         }
-        scope.enteredPasscode += '' + digit; //(o.enteredPasscode+=""+t,
-        if (scope.enteredPasscode.length >= 4) { //o.enteredPasscode.length>=4&&
-          if (scope.enteredPasscode === '' + scope.passcode) { //(o.enteredPasscode===""+o.passcode?
-            scope.enteredPasscode = ''; //(o.enteredPasscode="",
-            passcodeAttempts = 0; //e=0,
-            scope.onCorrect && scope.onCorrect(); //o.onCorrect&&o.onCorrect(),
-            scope._showLockScreen = false; //o._showLockScreen=!1
-          } else { //):(
-            scope.passcodeWrong = true; //o.passcodeWrong=!0,
-            passcodeAttempts++; //e++,
-            if (scope.maxAttempts != null && passcodeAttempts >= scope.maxAttempts) {
-              scope.onWrong && scope.onWrong(passcodeAttempts);
-              scope._showLockScreen = false;
-            } else if (scope.maxAttempts == null) {
-              scope.onWrong && scope.onWrong(passcodeAttempts);
-            }
-            $timeout(() => {
+        scope.enteredPasscode += '' + digit;
+        if (scope.enteredPasscode.length >= 4) {
+          if (scope.passcode != null) {
+            if (scope.enteredPasscode === '' + scope.passcode) {
               scope.enteredPasscode = '';
-              scope.passcodeWrong = false;
-            }, 800);
+              passcodeAttempts = 0;
+              scope.onCorrect && scope.onCorrect();
+              scope._showLockScreen = false;
+            } else {
+              scope.passcodeWrong = true;
+              passcodeAttempts++; //e++,
+              if (scope.maxAttempts != null && passcodeAttempts >= scope.maxAttempts) {
+                scope.onWrong && scope.onWrong(passcodeAttempts);
+                scope._showLockScreen = false;
+              } else if (scope.maxAttempts == null) {
+                scope.onWrong && scope.onWrong(passcodeAttempts);
+              }
+              $timeout(() => {
+                scope.enteredPasscode = '';
+                scope.passcodeWrong = false;
+              }, 800);
+            }
+          } else {
+            scope.onCorrect && scope.onCorrect(scope.enteredPasscode);
+            scope.enteredPasscode = '';
+            passcodeAttempts = 0;
+            scope._showLockScreen = false;
           }
         }
       };

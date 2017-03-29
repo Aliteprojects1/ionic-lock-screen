@@ -59,6 +59,44 @@ $lockScreen.show({
 });
 ```
 
+Set a button at the bottom of the screen: (useful to let user cancel or logout)
+```js
+$lockScreen.show({
+  code: '1234',
+  bottomButton: true,
+  bottomButtonLabel: 'Logout', //text written in button
+  onCorrect: function() {
+    //some code
+  },
+  onBottomButton: function(){ 
+    //logout action
+  }
+})
+```
+
+Use the lockscreen to set a new passcode:
+```js
+//do not set the code parameter as seen in examples above
+$lockScreen.show({
+  onCorrect: function(newCode) {
+    //use the newCode var here
+  }
+})
+```
+
+Use the maxAttempts parameter:
+```js
+$lockScreen.show({
+  code: '1234',
+  maxAttempts: 5,
+  onCorrect: function() {
+    //some code
+  },
+  onWrong: function() {
+    //this code will only be triggered after 5 fails
+  }
+})
+```
 
 You can also trigger the lock screen on the [resume](https://cordova.apache.org/docs/en/latest/cordova/events/events.resume.html) and [pause](https://cordova.apache.org/docs/en/latest/cordova/events/events.pause.html) events.
 
