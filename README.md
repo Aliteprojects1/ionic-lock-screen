@@ -81,7 +81,7 @@ $lockScreen.show({
 
 ### Theming / Language
 
-See available options [here](src/lock-screen/lock-screen.js#L5-L20).
+See available options [here](src/lock-screen/lock-screen.js#L5-L24).
 
 # License
 
