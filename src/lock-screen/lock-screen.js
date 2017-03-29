@@ -21,7 +21,8 @@ const lockScreenService = ($rootScope) => {
         buttonACColor     : settings.buttonACColor || "#F8F8F8",
         buttonACTextColor : settings.buttonACTextColor || "#464646",
         buttonDelColor    : settings.buttonDelColor || "#F8F8F8",
-        buttonDelTextColor: settings.buttonDelTextColor || "#464646"
+        buttonDelTextColor: settings.buttonDelTextColor || "#464646",
+        maxAttempts       : settings.maxAttempts || null //if set, onWrong callback will be called only after the chosen number of attempts
       });
     },
   };
@@ -54,7 +55,8 @@ const lockScreenDirective = ($timeout) => {
         scope.buttonACColor     = data.buttonACColor;
         scope.buttonACTextColor = data.buttonACTextColor;
         scope.buttonDelColor    = data.buttonDelColor;
-        scope.buttonDelTextColor=data.buttonDelTextColor;
+        scope.buttonDelTextColor= data.buttonDelTextColor;
+        scope.maxAttempts       = data.maxAttempts;
         $timeout(() => {
           if (data.touchId && window.touchid) {
             window.touchid.checkSupport(() => {
@@ -85,20 +87,25 @@ const lockScreenDirective = ($timeout) => {
       };
       scope.digit = (digit) => {
         scope.selected = +digit;
-        if (scope.passcodeWrong) {
+        if (scope.passcodeWrong) { //o.passcodeWrong||
           return;
         }
-        scope.enteredPasscode += '' + digit;
-        if (scope.enteredPasscode.length >= 4) {
-          if (scope.enteredPasscode === '' + scope.passcode) {
-            scope.enteredPasscode = '';
-            passcodeAttempts = 0;
-            scope.onCorrect && scope.onCorrect();
-            scope._showLockScreen = false;
-          } else {
-            scope.passcodeWrong = true;
-            passcodeAttempts++;
-            scope.onWrong && scope.onWrong(passcodeAttempts);
+        scope.enteredPasscode += '' + digit; //(o.enteredPasscode+=""+t,
+        if (scope.enteredPasscode.length >= 4) { //o.enteredPasscode.length>=4&&
+          if (scope.enteredPasscode === '' + scope.passcode) { //(o.enteredPasscode===""+o.passcode?
+            scope.enteredPasscode = ''; //(o.enteredPasscode="",
+            passcodeAttempts = 0; //e=0,
+            scope.onCorrect && scope.onCorrect(); //o.onCorrect&&o.onCorrect(),
+            scope._showLockScreen = false; //o._showLockScreen=!1
+          } else { //):(
+            scope.passcodeWrong = true; //o.passcodeWrong=!0,
+            passcodeAttempts++; //e++,
+            if (scope.maxAttempts != null && passcodeAttempts >= scope.maxAttempts) {
+              scope.onWrong && scope.onWrong(passcodeAttempts);
+              scope._showLockScreen = false;
+            } else if (scope.maxAttempts == null) {
+              scope.onWrong && scope.onWrong(passcodeAttempts);
+            }
             $timeout(() => {
               scope.enteredPasscode = '';
               scope.passcodeWrong = false;
