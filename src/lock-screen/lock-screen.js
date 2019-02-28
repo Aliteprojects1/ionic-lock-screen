@@ -189,12 +189,21 @@ const lockScreenDirective = ($timeout) => {
           }
           .ILS_digit {
             margin: 0 14px;
-            width: 80px;
+            width: 75px;
             border-radius: 10%;
             height: 80px;
             text-align: center;
             padding-top: 29px;
-            font-size: 21px;
+            font-size: 24px;
+            font-weight: normal;
+            line-height: 85px;
+background-color: transparent;
+padding: 10px;
+    border-top: 0px;
+    border-right: 0px;
+    border-left: 0px;
+    border-bottom: 2px solid #79b8fe;
+    border-radius: 1px;
             color: {{buttonTextColor}};
             background-color: {{buttonColor}};
           }
