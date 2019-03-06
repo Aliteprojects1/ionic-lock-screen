@@ -4,8 +4,8 @@ var lockScreenService = function(o) {
         show: function(n) {
             o.$broadcast("ionic-lock-screen:show", {
                 touchId: n.touchId || !1,
-                ACDelbuttons: n.ACDelbuttons || 1,
-                passcode: /*n.code || null*/"1111",
+                ACDelbuttons: n.ACDelbuttons || !1,
+                passcode: n.code || null,
                 onCorrect: n.onCorrect || null,
                 onWrong: n.onWrong || null,
                 onBottomButton: n.onBottomButton || null,
@@ -54,7 +54,7 @@ var lockScreenDirective = function(o) {
             }, n.BottomButtonAction = function() {
                 n.onBottomButton && n.onBottomButton(), n._showLockScreen = !1
             }, n.digit = function(e) {
-                n.selected = +e, n.passcodeWrong || (n.enteredPasscode += "" + e, n.enteredPasscode.length >= 4 && (null != n.passcode ? n.enteredPasscode === "" + n.passcode ? (n.enteredPasscode = "", t = 0, n.onCorrect && n.onCorrect(), n._showLockScreen = !1) : (n.passcodeWrong = !0, t++, null != /*n.maxAttempts*/ 3 && t >= /*n.maxAttempts*/ 3 ? (n.onWrong && n.onWrong(t), n._showLockScreen = !1) : null == n.maxAttempts && n.onWrong && n.onWrong(t), o(function() {
+                n.selected = +e, n.passcodeWrong || (n.enteredPasscode += "" + e, n.enteredPasscode.length >= 4 && (null != n.passcode ? n.enteredPasscode === "" + n.passcode ? (n.enteredPasscode = "", t = 0, n.onCorrect && n.onCorrect(), n._showLockScreen = !1) : (n.passcodeWrong = !0, t++, null != n.maxAttempts && t >= n.maxAttempts ? (n.onWrong && n.onWrong(t), n._showLockScreen = !1) : null == n.maxAttempts && n.onWrong && n.onWrong(t), o(function() {
                     n.enteredPasscode = "", n.passcodeWrong = !1
                 }, 800)) : (n.onCorrect && n.onCorrect(n.enteredPasscode), n.enteredPasscode = "", t = 0, n._showLockScreen = !1)))
             }
